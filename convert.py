@@ -104,7 +104,7 @@ for file in json_files:
                 FileToWrite = RoleDirectory + "/files/" + basename
 
                 with open(FileToWrite, "w") as f:
-                    f.write(i['contents'])
+                    f.write(i['contents'].encode('ascii', 'ignore').decode('ascii'))
 
                 FILE_NAME = basename
                 TASK_DESCRIPTION = "Copy file " + FILE_NAME
