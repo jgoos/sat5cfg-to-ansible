@@ -16,4 +16,4 @@ RUN apt update \
 
 VOLUME /data
 
-CMD ["python3", "./sat5cfg2ansible.py"]
+CMD ["python3", "./sat5cfg2ansible.py", "/data"]
