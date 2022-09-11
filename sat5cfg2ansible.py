@@ -6,15 +6,22 @@ import os
 import magic
 import csv
 
-TOPDIR = "output"
-WORKDIR = TOPDIR + "/roles"
+VERBOSE = False
+INPUT_DIR = "input_files"
+OUTPUT_DIR = "transformed_files"
+WORKDIR = OUTPUT_DIR + "/roles"
 ROLE_AUTHOR_NAME = "<change me>"
 
-all_files = os.listdir()
+all_files = []
 json_files = []
 
+try:
+    all_files = os.listdir(INPUT_DIR)
+except FileNotFoundError as e:
+    print(e)
+
 for file in all_files:
-    if os.path.isfile(file) and file.endswith(".json"):
+    if os.path.isfile(INPUT_DIR + "/" + file) and file.endswith(".json"):
         json_files.append(file)
 
 if not json_files:
@@ -23,9 +30,10 @@ if not json_files:
 for file in json_files:
     # strip json from filename
     AnsibleRoleName = os.path.splitext(file)[0]
-    print("Creating role: {} with file: {} as input".format(AnsibleRoleName,file))
+    if VERBOSE:
+        print("Creating role: {} with file: {} as input".format(AnsibleRoleName,file))
     RoleDirectory = WORKDIR + '/' + AnsibleRoleName
-    PlaybookDirectory = TOPDIR + '/playbooks'
+    PlaybookDirectory = OUTPUT_DIR + '/playbooks'
 
     for d in RoleDirectory, PlaybookDirectory:
         try:
@@ -44,7 +52,7 @@ for file in json_files:
         except OSError as e:
             print(e)
 
-    with open(file, 'r') as json_file:
+    with open(INPUT_DIR + "/" + file, 'r') as json_file:
         data = json.load(json_file)
 
         # Create meta.yml
