@@ -130,9 +130,9 @@ for file in json_files:
 
                 FileToWrite = RoleDirectory + "/files/" + basename
 
-                magic_config = magic.Magic(uncompress=False)
+                magic_config = magic.Magic(keep_going=False, mime_encoding=True, mime=True, uncompress=False)
                 magic_filetype_found = magic_config.from_buffer(FILE_CONTENT)
-                writer.writerow(["bla", basename, magic_filetype_found, "", "", "", "", ""])
+                writer.writerow([AnsibleRoleName, basename, magic_filetype_found, "", "", "", "", ""])
 
                 with open(FileToWrite, "w") as f:
                     f.write(FILE_CONTENT)
