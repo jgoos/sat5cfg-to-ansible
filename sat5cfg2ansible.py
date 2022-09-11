@@ -9,7 +9,7 @@ import csv
 
 VERBOSE = False
 INPUT_DIR = sys.argv[1]
-OUTPUT_DIR = "transformed_files"
+OUTPUT_DIR = INPUT_DIR + "/" + "transformed_files"
 WORKDIR = OUTPUT_DIR + "/roles"
 ROLE_AUTHOR_NAME = "<change me>"
 

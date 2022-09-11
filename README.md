@@ -1,4 +1,5 @@
 ### sat5cfg-to-ansible
+
 Convert Red Hat Satellite 5 configuration channels to ansible roles
 
 #### Test
@@ -14,8 +15,8 @@ pip install -r requirements.txt
 #### Usage
 
 1. put the json files in this path
-2. run `sat5cfg2ansible.py <path_to_local_files>`
-3. this will output the roles and playbooks to the `transformed_files` directory
+2. run `sat5cfg2ansible.py <path_to_json_files>`
+3. this will output the roles and playbooks to the `<path_to_json_files>/transformed_files` directory
 
 #### Container Image
 
