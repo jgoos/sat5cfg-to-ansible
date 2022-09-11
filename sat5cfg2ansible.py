@@ -17,6 +17,9 @@ for file in all_files:
     if os.path.isfile(file) and file.endswith(".json"):
         json_files.append(file)
 
+if not json_files:
+    print("No json files found")
+
 for file in json_files:
     # strip json from filename
     AnsibleRoleName = os.path.splitext(file)[0]
