@@ -2,7 +2,9 @@ FROM ubuntu
 
 MAINTAINER J Goossens "<jgoos.code@gmail.com>"
 
-WORKDIR ["/opt/convert"]
+WORKDIR /prog
+
+ENV PATH="/prog:$PATH"
 
 COPY sat5cfg2ansible.py requirements.txt .
 COPY templates templates
@@ -12,5 +14,6 @@ RUN apt update \
     && apt clean \
     && python3 -m pip install -r requirements.txt
 
-VOLUME "/opt/convert/input_files"
+VOLUME /data
 
+CMD ["python3", "./sat5cfg2ansible.py"]
