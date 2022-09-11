@@ -116,6 +116,8 @@ for file in json_files:
         # cvs file
         CSV_FILE_PATH = RoleDirectory + "/" + "file_list.csv"
         csv_file = open(CSV_FILE_PATH, 'w', newline='')
+        writer = csv.writer(csv_file)
+        writer.writerow(["Configuration Channel", "File Name", "Type", "Status", "Comment", "Duplicate", "Satellite Variable", "Sensitive Data"])
 
         for i in data[0]['files']:
             # FILE ACTIONS
@@ -128,11 +130,9 @@ for file in json_files:
 
                 FileToWrite = RoleDirectory + "/files/" + basename
 
-                writer = csv.writer(csv_file)
-                writer.writerow(["File Name", "Type"])
                 magic_config = magic.Magic(uncompress=False)
                 magic_filetype_found = magic_config.from_buffer(FILE_CONTENT)
-                writer.writerow([basename, magic_filetype_found])
+                writer.writerow(["bla", basename, magic_filetype_found, "", "", "", "", ""])
 
                 with open(FileToWrite, "w") as f:
                     f.write(FILE_CONTENT)
