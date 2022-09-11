@@ -3,28 +3,42 @@ import json
 import yaml
 from jinja2 import Template
 import os
+import magic
+import csv
 
-TOPDIR = "output"
-WORKDIR = TOPDIR + "/roles"
+VERBOSE = False
+INPUT_DIR = "input_files"
+OUTPUT_DIR = "transformed_files"
+WORKDIR = OUTPUT_DIR + "/roles"
 ROLE_AUTHOR_NAME = "<change me>"
 
-all_files = os.listdir()
+all_files = []
 json_files = []
 
+try:
+    all_files = os.listdir(INPUT_DIR)
+except FileNotFoundError as e:
+    print(e)
+
 for file in all_files:
-    if os.path.isfile(file) and file.endswith(".json"):
+    if os.path.isfile(INPUT_DIR + "/" + file) and file.endswith(".json"):
         json_files.append(file)
+
+if not json_files:
+    print("No json files found")
 
 for file in json_files:
     # strip json from filename
     AnsibleRoleName = os.path.splitext(file)[0]
-    print("Role is: ", AnsibleRoleName)
+    if VERBOSE:
+        print("Creating role: {} with file: {} as input".format(AnsibleRoleName,file))
     RoleDirectory = WORKDIR + '/' + AnsibleRoleName
-    PlaybookDirectory = TOPDIR + '/playbooks'
+    PlaybookDirectory = OUTPUT_DIR + '/playbooks'
 
     for d in RoleDirectory, PlaybookDirectory:
         try:
-            os.makedirs(d)
+            if not os.path.exists(d):
+                os.makedirs(d)
         except OSError as e:
             print(e)
 
@@ -32,16 +46,18 @@ for file in json_files:
     DirsToCreate = ["tasks","files","meta"]
     for d in DirsToCreate:
         try:
-            os.makedirs(RoleDirectory + '/' + d)
+            to_create = RoleDirectory + '/' + d
+            if not os.path.exists(to_create):
+                os.makedirs(to_create)
         except OSError as e:
             print(e)
 
-    with open(file, 'r') as json_file:
+    with open(INPUT_DIR + "/" + file, 'r') as json_file:
         data = json.load(json_file)
 
         # Create meta.yml
         ROLE_DESCRIPTION = data[0]['description'].replace("\n", " ")
- 
+
         with open('templates/meta.j2') as f:
             tmpl = Template(f.read())
             meta_tmpl_processed = tmpl.render(role_author_name = ROLE_AUTHOR_NAME, role_description = ROLE_DESCRIPTION)
@@ -87,12 +103,21 @@ for file in json_files:
                             "owner": DIRECTORY_OWNER,
                             "group": DIRECTORY_GROUP,
 
-                        }
+                        },
+                        "tags": [
+                            "directories"
+                            ]
                     }
                 ]
                 AnsibleFileToWrite = RoleDirectory + "/tasks/main.yml"
                 with open(AnsibleFileToWrite, 'a') as yaml_file:
                     configuration = yaml.dump(create_directory_template, yaml_file, sort_keys=False)
+
+        # cvs file
+        CSV_FILE_PATH = RoleDirectory + "/" + "file_list.csv"
+        csv_file = open(CSV_FILE_PATH, 'w', newline='')
+        writer = csv.writer(csv_file)
+        writer.writerow(["Configuration Channel", "File Name", "Type", "Status", "Comment", "Duplicate", "Satellite Variable", "Sensitive Data"])
 
         for i in data[0]['files']:
             # FILE ACTIONS
@@ -101,10 +126,16 @@ for file in json_files:
                 dirname = os.path.dirname(i['path'])
                 basename = os.path.basename(i['path'])
 
+                FILE_CONTENT = i['contents'].encode('ascii', 'ignore').decode('ascii')
+
                 FileToWrite = RoleDirectory + "/files/" + basename
 
+                magic_config = magic.Magic(keep_going=False, mime_encoding=True, mime=True, uncompress=False)
+                magic_filetype_found = magic_config.from_buffer(FILE_CONTENT)
+                writer.writerow([AnsibleRoleName, basename, magic_filetype_found, "", "", "", "", ""])
+
                 with open(FileToWrite, "w") as f:
-                    f.write(i['contents'].encode('ascii', 'ignore').decode('ascii'))
+                    f.write(FILE_CONTENT)
 
                 FILE_NAME = basename
                 TASK_DESCRIPTION = "Copy file " + FILE_NAME
@@ -124,13 +155,18 @@ for file in json_files:
                             "group": FILE_GROUP,
                             "backup": True
 
-                        }
+                        },
+                        "tags": [
+                            "files"
+                            ]
                     }
                 ]
 
                 AnsibleFileToWrite = RoleDirectory + "/tasks/main.yml"
                 with open(AnsibleFileToWrite, 'a') as yaml_file:
                     configuration = yaml.dump(copy_file_template, yaml_file, sort_keys=False)
+
+        csv_file.close()
 
         for i in data[0]['files']:
             # SYMLINK ACTIONS
@@ -146,7 +182,10 @@ for file in json_files:
                             "src": SYMLINK_SOURCE,
                             "dest": SYMLINK_DESTINATION,
                             "state": 'link'
-                        }
+                        },
+                        "tags": [
+                            "symlinks"
+                            ]
                     }
                 ]
                 AnsibleFileToWrite = RoleDirectory + "/tasks/main.yml"

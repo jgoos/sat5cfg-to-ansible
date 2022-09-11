@@ -1,2 +1,4 @@
 *.json
 output/
+venv/
+transformed_files/
