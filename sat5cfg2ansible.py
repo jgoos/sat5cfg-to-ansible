@@ -115,7 +115,7 @@ for file in json_files:
                     configuration = yaml.dump(create_directory_template, yaml_file, sort_keys=False)
 
         # cvs file
-        CSV_FILE_PATH = RoleDirectory + "/" + "file_list.csv"
+        CSV_FILE_PATH = RoleDirectory + "/" + AnsibleRoleName + "_checklist.csv"
         csv_file = open(CSV_FILE_PATH, 'w', newline='')
         writer = csv.writer(csv_file)
         writer.writerow(["Configuration Channel", "File Name", "Type", "Status", "Comment", "Duplicate", "Satellite Variable", "Sensitive Data"])
@@ -133,7 +133,7 @@ for file in json_files:
 
                 magic_config = magic.Magic(uncompress=False)
                 magic_filetype_found = magic_config.from_buffer(FILE_CONTENT)
-                magic_filetype_fixed = magic_filetype_found.replace(',', '|')
+                magic_filetype_fixed = magic_filetype_found.replace(',', ' |')
                 writer.writerow([AnsibleRoleName, basename, magic_filetype_fixed, "", "", "", "", ""])
 
                 with open(FileToWrite, "w") as f:
