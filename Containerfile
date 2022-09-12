@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER J Goossens "<jgoos.code@gmail.com>"
+LABEL org.opencontainers.image.authors="jgoos.code@gmail.com"
 
 WORKDIR /prog
 
