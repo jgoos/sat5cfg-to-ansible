@@ -117,8 +117,8 @@ for file in json_files:
         # cvs file
         CSV_FILE_PATH = RoleDirectory + "/" + AnsibleRoleName + "_checklist.csv"
         csv_file = open(CSV_FILE_PATH, 'w', newline='')
-        writer = csv.writer(csv_file)
-        writer.writerow(["Configuration Channel", "File Name", "Type", "Status", "Comment", "Duplicate", "Satellite Variable", "Sensitive Data"])
+        writer = csv.writer(csv_file, delimiter=';')
+        writer.writerow(["Configuration Channel", "File Path", "File Name", "Type", "Status", "Comment", "Duplicate", "Satellite Variable", "Sensitive Data"])
 
         for i in data[0]['files']:
             # FILE ACTIONS
@@ -133,8 +133,8 @@ for file in json_files:
 
                 magic_config = magic.Magic(uncompress=False)
                 magic_filetype_found = magic_config.from_buffer(FILE_CONTENT)
-                magic_filetype_fixed = magic_filetype_found.replace(',', ' |')
-                writer.writerow([AnsibleRoleName, basename, magic_filetype_fixed, "", "", "", "", ""])
+                magic_filetype_fixed = magic_filetype_found.replace(';', ' |')
+                writer.writerow([AnsibleRoleName, dirname, basename, magic_filetype_fixed, "", "", "", "", ""])
 
                 with open(FileToWrite, "w") as f:
                     f.write(FILE_CONTENT)
