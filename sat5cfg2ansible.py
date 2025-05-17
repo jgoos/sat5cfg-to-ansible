@@ -114,7 +114,7 @@ for file in json_files:
                 with open(AnsibleFileToWrite, 'a') as yaml_file:
                     configuration = yaml.dump(create_directory_template, yaml_file, sort_keys=False)
 
-        # cvs file
+        # CSV file
         CSV_FILE_PATH = RoleDirectory + "/" + AnsibleRoleName + "_checklist.csv"
         csv_file = open(CSV_FILE_PATH, 'w', newline='')
         writer = csv.writer(csv_file, delimiter=';')
