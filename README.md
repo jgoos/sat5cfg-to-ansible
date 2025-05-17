@@ -1,6 +1,6 @@
 # Converting Red Hat Satellite 5 Configuration Channels to Ansible Roles
 
-This script converts Red Hat Satellite 5 configuration channels to ansible roles.
+This script converts Red Hat Satellite 5 configuration channels to Ansible roles.
 
 ## Usage
 
@@ -33,7 +33,6 @@ podman build -t sat5cfg .
 
 To convert the JSON files using the container, run the following command:
 
-Copy code
 
 `podman run -it -v <path_to_local_files>:/data:Z sat5cfg`
 
