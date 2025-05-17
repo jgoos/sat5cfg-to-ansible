@@ -7,6 +7,10 @@ import sys
 import magic
 import csv
 
+if len(sys.argv) < 2:
+    print(f"usage: {os.path.basename(sys.argv[0])} <input_dir>")
+    sys.exit(1)
+
 VERBOSE = False
 INPUT_DIR = sys.argv[1]
 OUTPUT_DIR = INPUT_DIR + "/" + "transformed_files"
