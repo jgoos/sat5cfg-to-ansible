@@ -175,7 +175,7 @@ for file in json_files:
             if i['type'] == 'symlink':
                 SYMLINK_SOURCE = i['path']
                 SYMLINK_DESTINATION = i['target_path']
-                TASK_DESCRIPTION = "Create directory " + SYMLINK_DESTINATION
+                TASK_DESCRIPTION = "Create symlink " + SYMLINK_DESTINATION
 
                 create_symlink_template = [
                     {
